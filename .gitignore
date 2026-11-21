@@ -1,0 +1,13 @@
+# Estado local do banco de dados
+.data/
+
+# Cache do direnv
+.direnv/
+
+# Symlink que o `nix build` cria
+result
+
+# Segredos reais — nunca versionar
+.env
+*.env
+!.env.example
