@@ -27,18 +27,13 @@ CREATE TABLE items (
 
     -- Snapshot do catálogo no momento da aquisição. Ele reside na linha,
     -- uma vez que uma coluna gerada não pode fazer referência a outra tabela.
-    max_stack   INTEGER     NOT NULL CHECK (max_stack >= 1),
-
-    -- Identidade de empilhamento. NULL quando max_stack = 1, de modo que várias espadas
-    -- idênticas possam coexistir (um índice UNIQUE ignora valores NULL).
-    stack_key   TEXT GENERATED ALWAYS AS (
-        CASE WHEN max_stack > 1
-             THEN player_id::text || ':' || kind
-             ELSE NULL END
-    ) STORED
+    max_stack   INTEGER     NOT NULL CHECK (max_stack >= 1)
 );
 
-CREATE UNIQUE INDEX items_stack_identity ON items(stack_key);
+CREATE UNIQUE INDEX items_one_partial_stack
+    ON items (player_id, kind)
+    WHERE quantity < max_stack;
+
 CREATE INDEX        items_player_idx     ON items(player_id);
 
 -- ============================================================
