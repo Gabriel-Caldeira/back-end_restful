@@ -16,6 +16,7 @@
         git
         go_1_27
         postgresql_18
+        openssl
       ];
     };
   };
