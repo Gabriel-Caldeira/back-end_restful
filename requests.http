@@ -1,0 +1,138 @@
+@host = http://127.0.0.1:8080
+@key = COLE_SUA_CHAVE_AQUI
+@player = 1
+
+### Health (público): 200
+GET {{host}}/health
+
+### Sem chave: 401
+GET {{host}}/items
+X-Player-ID: {{player}}
+
+### Chave inválida: 401
+GET {{host}}/items
+X-Player-ID: {{player}}
+Authorization: Bearer chave-errada
+
+### Sem X-Player-ID: 400
+GET {{host}}/items
+Authorization: Bearer {{key}}
+
+### Listar itens: 200
+GET {{host}}/items
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+
+### Criar item: 201 + Location
+POST {{host}}/items
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"kind": "health_potion", "quantity": 90}
+
+### Criar com quantity 0: 400
+POST {{host}}/items
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"kind": "health_potion", "quantity": 0}
+
+### Criar com kind desconhecido: 400
+POST {{host}}/items
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"kind": "nao_existe", "quantity": 1}
+
+### Criar com JSON inválido: 400
+POST {{host}}/items
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"kind": "health_potion", "quantity":
+
+### Criar enviando id (recusado): 400
+POST {{host}}/items
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"id": 5, "kind": "health_potion", "quantity": 1}
+
+### Buscar item: 200
+GET {{host}}/items/1
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+
+### Buscar item inexistente: 404
+GET {{host}}/items/99999
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+
+### Buscar item de outro jogador: 404
+GET {{host}}/items/1
+X-Player-ID: 2
+Authorization: Bearer {{key}}
+
+### Buscar com id não numérico: 400
+GET {{host}}/items/abc
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+
+### Buscar item sem chave: 401
+GET {{host}}/items/1
+X-Player-ID: {{player}}
+
+### Atualizar quantidade: 200
+PUT {{host}}/items/1
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"quantity": 50}
+
+### Atualizar acima do max_stack: 400
+PUT {{host}}/items/1
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"quantity": 1000}
+
+### Atualizar item inexistente: 404
+PUT {{host}}/items/99999
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+Content-Type: application/json
+
+{"quantity": 5}
+
+### Atualizar sem chave: 401
+PUT {{host}}/items/1
+X-Player-ID: {{player}}
+Content-Type: application/json
+
+{"quantity": 5}
+
+### Excluir item: 204
+DELETE {{host}}/items/1
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+
+### Excluir item inexistente: 404
+DELETE {{host}}/items/99999
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
+
+### Excluir sem chave: 401
+DELETE {{host}}/items/1
+X-Player-ID: {{player}}
+
+### Método não permitido: 405
+PATCH {{host}}/items/1
+X-Player-ID: {{player}}
+Authorization: Bearer {{key}}
