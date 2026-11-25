@@ -30,11 +30,8 @@ CREATE TABLE items (
     max_stack   INTEGER     NOT NULL CHECK (max_stack >= 1)
 );
 
-CREATE UNIQUE INDEX items_one_partial_stack
-    ON items (player_id, kind)
-    WHERE quantity < max_stack;
-
-CREATE INDEX        items_player_idx     ON items(player_id);
+CREATE INDEX items_player_kind_idx ON items (player_id, kind);
+CREATE INDEX items_player_idx      ON items (player_id);
 
 -- ============================================================
 -- Chaves de API: apenas o hash é armazenado, nunca a própria chave.

@@ -127,6 +127,8 @@ func (d *itemDAO) Create(ctx context.Context, playerID int64, kind string, quant
 	row := tx.QueryRow(ctx,
 		"SELECT "+itemColumns+` FROM items
 		  WHERE player_id = $1 AND kind = $2 AND quantity < max_stack
+		  ORDER BY id
+		  LIMIT 1
 		  FOR UPDATE`,
 		playerID, kind)
 	partial, err := scanItem(row)
