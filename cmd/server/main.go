@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -45,6 +46,15 @@ func main() {
 	mux.HandleFunc("PUT /items/{id}", items.Update)
 	mux.HandleFunc("DELETE /items/{id}", items.Delete)
 
+	srv := &http.Server{
+		Addr:              addr,
+		Handler:           httpapi.Auth(keys, mux),
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+
 	log.Printf("ouvindo em %s", addr)
-	log.Fatal(http.ListenAndServe(addr, httpapi.Auth(keys, mux)))
+	log.Fatal(srv.ListenAndServe())
 }
