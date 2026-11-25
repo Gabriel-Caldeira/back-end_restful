@@ -33,6 +33,7 @@ func main() {
 	}
 
 	items := httpapi.NewItemHandler(repo.NewItemDAO(pool))
+	keys := repo.NewKeyDAO(pool)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
@@ -45,5 +46,5 @@ func main() {
 	mux.HandleFunc("DELETE /items/{id}", items.Delete)
 
 	log.Printf("ouvindo em %s", addr)
-	log.Fatal(http.ListenAndServe(addr, mux))
+	log.Fatal(http.ListenAndServe(addr, httpapi.Auth(keys, mux)))
 }
